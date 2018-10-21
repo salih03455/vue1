@@ -5,6 +5,10 @@ const config = require('./config');
 
 const app = express();
 
+// Routes:
+const labels = require('./routes/example');
+const home = require('./routes/home');
+
 // Veritabanı bağlantısı:
 mongoose.connect(config.db);
 const mngConn = mongoose.connection;
@@ -13,10 +17,9 @@ mngConn.once('open', function (){
 	console.log('Veritabanına bağlanıldı');
 });
 
-// Router:
-app.get('/', (req, res) => {
-	res.send('Merhaba dünyalılar!');
-});
+// Middleware:
+app.use('/', home);
+app.use('/example', labels);
 
 
 
