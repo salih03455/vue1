@@ -6,7 +6,7 @@ const config = require('./config');
 const app = express();
 
 // Routes:
-const labels = require('./routes/example');
+const labels = require('./routes/labels');
 const home = require('./routes/home');
 
 // Veritabanı bağlantısı:
@@ -19,7 +19,7 @@ mngConn.once('open', function (){
 
 // Middleware:
 app.use('/', home);
-app.use('/example', labels);
+app.use('/labels', labels);
 
 
 
