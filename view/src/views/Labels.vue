@@ -16,7 +16,7 @@
 			
 			<div v-for="field in fields" class="form-group">
 				<label for="name">{{ field.type }}</label>
-				<input type="text" name="name" id="name">
+				<input type="text" name="name" id="name" v-model="field.value">
 			</div>
 
 			<div>
@@ -43,10 +43,10 @@
 				errors: [],
 				newFieldValue: '',
 				fields: [
-					{ type: 'İsim', required: true },
-					{ type: 'Soyisim', required: true },
-					{ type: 'Kütük', required: true },
-					{ type: 'Tevellüt', required: true }
+					{ type: 'İsim', required: true, value: '' },
+					{ type: 'Soyisim', required: true, value: '' },
+					{ type: 'Kütük', required: true, value: '' },
+					{ type: 'Tevellüt', required: true, value: '' }
 				],
 				addField: false,
 				success: {
@@ -64,29 +64,24 @@
 			},
 			saveNewField() {
 				this.addField = false;
-				this.fields.push({ type: this.newFieldValue, required: true });
+				this.fields.push({ type: this.newFieldValue, required: true, value: '' });
 				this.newFieldValue = '';
 			},
-			checkForm:function(e) {
-				let headers = new Headers();
-    		headers.append('Content-Type', 'application/json');
+			checkForm:function() {
 				this.$http.post('http://localhost:3000/labels', { data: this.fields })
 				.then(response => {
 					this.success = {
 						status: true,
 						message: response.body.message
 					};
+					for(let i = 0; i < this.fields.length; i++){
+						this.fields[i].value = '';
+					}
 					console.log(response);
 				})
 				.catch((err) => {
 					console.log(err);
 				});
-
-				//if(this.name && this.age) return true;
-				//this.errors = [];
-				//if(!this.name) this.errors.push("Name required.");
-				//if(!this.age) this.errors.push("Age required.");
-				//e.preventDefault();
 			}
 		}
 	}

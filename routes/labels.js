@@ -9,7 +9,7 @@ route.get('/', (req, res) => {
 route.post('/', (req, res) => {
 	console.log(req.body);
 	const Labels = new LabelsModel({
-    label: req.body
+    label: req.body.data
 	});
 	Labels.save((err) => {
 		if(err) {
