@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 
 const LabelsSchema = mongoose.Schema({
-	title: String,
-	description: String,
-	color: String
+	label: Array
 });
 
-module.exports = mongoose.model('Labels', LabelsSchema);
+const Labels = module.exports = mongoose.model('Labels', LabelsSchema);

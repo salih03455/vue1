@@ -1,6 +1,8 @@
 const http = require('http');
 const express = require('express');
+const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const config = require('./config');
 
 const app = express();
@@ -18,6 +20,9 @@ mngConn.once('open', function (){
 });
 
 // Middleware:
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(cors());
 app.use('/', home);
 app.use('/labels', labels);
 

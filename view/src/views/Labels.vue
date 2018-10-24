@@ -1,13 +1,17 @@
 <template>
 	<div class="labels">
 		
-		<form @submit="checkForm" action="/labels" method="post">
+		<div>
 			
 			<div v-if="errors.length">
 				<b>Please correct the following error(s):</b>
 				<ul>
 					<li v-for="error in errors">{{ error }}</li>
 				</ul>
+			</div>
+
+			<div v-if="success.status">
+				{{ success.message }}
 			</div>
 			
 			<div v-for="field in fields" class="form-group">
@@ -16,10 +20,10 @@
 			</div>
 
 			<div>
-				<input type="submit" value="KAYDET">
+				<a href="#" @click.prevent="checkForm" class="submitLink">KAYDET</a>
 			</div>
 
-		</form>
+		</div>
 
 		<span class="and">ya da</span>
 			
@@ -44,7 +48,11 @@
 					{ type: 'Kütük', required: true },
 					{ type: 'Tevellüt', required: true }
 				],
-				addField: false
+				addField: false,
+				success: {
+					status: false,
+					message: ''
+				}
 			}
 		},
 		methods: {
@@ -60,11 +68,25 @@
 				this.newFieldValue = '';
 			},
 			checkForm:function(e) {
-				if(this.name && this.age) return true;
-				this.errors = [];
-				if(!this.name) this.errors.push("Name required.");
+				let headers = new Headers();
+    		headers.append('Content-Type', 'application/json');
+				this.$http.post('http://localhost:3000/labels', { data: this.fields })
+				.then(response => {
+					this.success = {
+						status: true,
+						message: response.body.message
+					};
+					console.log(response);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+
+				//if(this.name && this.age) return true;
+				//this.errors = [];
+				//if(!this.name) this.errors.push("Name required.");
 				//if(!this.age) this.errors.push("Age required.");
-				e.preventDefault();
+				//e.preventDefault();
 			}
 		}
 	}
@@ -86,7 +108,8 @@
 		text-align: center;
 		padding: 10px;
 	}
-	.addNewField {
+	.addNewField,
+	.submitLink {
 		display: block;
 		width: 100%;
 		background: #92b01a;
@@ -100,6 +123,10 @@
 		outline: none;
 		text-align: center;
 		cursor: pointer;
+	}
+	.submitLink {
+		background-color: #00a1ff;
+		text-decoration: none;
 	}
 }
 </style>
