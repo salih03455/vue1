@@ -14,12 +14,24 @@
 				{{ success.message }}
 			</div>
 
-			<div class="popup-wrapper" v-if="openPopup" @click.stop="closePopup">
+			<div data-id="popup1" class="popup-wrapper" v-if="openPopup.popup1" @click.stop="closePopup">
 				<div class="popup">
 					<span><span>{{ fields[removeFieldIndex].type }}</span> öğesini silmek istediğinizden<br><b>emin misiniz?</b></span>
 					<div class="popup-links">
-						<a class="popup-link-close" @click.stop="closePopup">Vazgeçtim</a>
-						<a close="popup-link-ok" @click.stop="removeField">Pek Tabiki</a>
+						<a data-id="popup1" class="popup-link-close" @click.stop="closePopup">Vazgeçtim</a>
+						<a class="popup-link-ok" @click.stop="removeField">Pek Tabiki</a>
+					</div>
+				</div>
+			</div>
+
+			<div data-id="popup2" class="popup-wrapper" v-if="openPopup.popup2" @click.stop="closePopup">
+				<div class="popup">
+					<div class="newField">
+						<input type="text" @keyup.enter="saveNewField" ref="saveNewField" v-model="newFieldValue">
+					</div>
+					<div class="popup-links">
+						<a data-id="popup2" class="popup-link-close" @click.stop="closePopup">Vazgeçtim</a>
+						<a class="popup-link-ok" @click.stop="saveNewField">Ekle</a>
 					</div>
 				</div>
 			</div>
@@ -40,10 +52,6 @@
 			
 		<a @click="addNewField" class="addNewField">YENİ ALAN EKLE</a>
 
-		<div v-if="addField" class="newField">
-			<input type="text" @keyup.enter="saveNewField" ref="saveNewField" v-model="newFieldValue">
-		</div>
-
 	</div>
 </template>
 
@@ -59,8 +67,10 @@
 					{ type: 'Kütük', required: true, value: '' },
 					{ type: 'Tevellüt', required: true, value: '' }
 				],
-				addField: false,
-				openPopup: false,
+				openPopup: {
+					popup1: false,
+					popup2: false
+				},
 				success: {
 					status: false,
 					message: ''
@@ -70,23 +80,23 @@
 		},
 		methods: {
 			addNewField() {
-				this.addField = ! this.addField;
+				this.openPopup.popup2 = true;
 				this.$nextTick(() => {
-					if (this.addField) this.$refs.saveNewField.focus();
+					if (this.openPopup.popup2) this.$refs.saveNewField.focus();
 				});
 			},
 			saveNewField() {
-				this.addField = false;
+				this.openPopup.popup2 = false;
 				this.fields.push({ type: this.newFieldValue, required: true, value: '' });
 				this.newFieldValue = '';
 			},
 			isRemoveField(index) {
-				this.openPopup = true;
+				this.openPopup.popup1 = true;
 				this.removeFieldIndex = index;
 			},
 			removeField() {
 				this.fields.splice(this.fields[this.removeFieldIndex], 1);
-				this.openPopup = false;
+				this.openPopup.popup1 = false;
 			},
 			saveForm() {
 				this.$http.post('http://localhost:3000/labels', { data: this.fields })
@@ -105,8 +115,9 @@
 				});
 			},
 			closePopup(e) {
-				if (e.target.className == 'popup-wrapper' || e.target.className == 'popup-link-close') {
-					this.openPopup = false;
+				let dataId = e.target.attributes.getNamedItem('data-id');
+				if (dataId) {
+					this.openPopup[dataId.value] = false;
 				}
 			}
 		}
